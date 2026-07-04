@@ -1,0 +1,260 @@
+{
+  "name": "pawn-compiler-umka",
+  "displayName": "Pawn Compiler (UMKa3XX)",
+  "description": "Compile Pawn (.p) scripts with the UMKa3XX pawncc compiler directly in VS Code, with diagnostics in the Problems panel.",
+  "version": "0.2.0",
+  "publisher": "hqh5",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Build Tools"
+  ],
+  "keywords": [
+    "pawn",
+    "pawncc",
+    "amx",
+    "umka",
+    "compiler"
+  ],
+  "activationEvents": [
+    "onCommand:pawn.compile",
+    "onCommand:pawn.clean",
+    "onTaskType:pawn",
+    "onLanguage:pawn"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "pawn",
+        "extensions": [
+          ".p",
+          ".inc",
+          ".pwn"
+        ],
+        "aliases": [
+          "Pawn",
+          "pawn"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "pawn.compile",
+        "title": "Pawn: Compile File",
+        "category": "Pawn"
+      },
+      {
+        "command": "pawn.clean",
+        "title": "Clear Diagnostics",
+        "category": "Pawn"
+      },
+      {
+        "command": "pawn.showOutput",
+        "title": "Show Compiler Output",
+        "category": "Pawn"
+      },
+      {
+        "command": "pawn.selectPlatform",
+        "title": "Select Platform / Version",
+        "category": "Pawn"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pawn.compile",
+        "key": "ctrl+f6",
+        "mac": "cmd+f6",
+        "when": "resourceLangId == pawn && editorTextFocus"
+      },
+      {
+        "command": "pawn.compile",
+        "key": "f6",
+        "when": "resourceLangId == pawn && editorTextFocus"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "pawn.compile",
+          "when": "resourceLangId == pawn"
+        },
+        {
+          "command": "pawn.clean",
+          "when": "resourceLangId == pawn"
+        },
+        {
+          "command": "pawn.showOutput"
+        },
+        {
+          "command": "pawn.selectPlatform",
+          "when": "resourceLangId == pawn"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "pawn.compile",
+          "when": "resourceLangId == pawn",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "pawn.compile",
+          "when": "resourceLangId == pawn",
+          "group": "navigation"
+        }
+      ]
+    },
+    "taskDefinitions": [
+      {
+        "type": "pawn",
+        "required": [
+          "file"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Absolute path to the .p source file to compile."
+          },
+          "output": {
+            "type": "string",
+            "description": "Path to the output .amx file. Defaults to the source directory."
+          },
+          "includes": {
+            "type": "array",
+            "description": "Additional include directories (-i paths)."
+          },
+          "args": {
+            "type": "array",
+            "description": "Extra compiler flags (e.g. -d1 -O3 -v -V)."
+          }
+        }
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "pawncc",
+        "label": "Pawn Compiler (pawncc)",
+        "owner": "pawn",
+        "source": "pawncc",
+        "fileLocation": [
+          "absolute"
+        ],
+        "pattern": {
+          "regexp": "^(.+?)\\((\\d+)(?:-(\\d+))?\\)\\s*:\\s*(fatal error|error|warning)\\s*(\\d+)?\\s*:\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Pawn Compiler",
+      "properties": {
+        "pawn.compilerPath": {
+          "type": "string",
+          "default": "C:\\Program Files (x86)\\UMKa3XX\\pawn\\bin\\pawncc.exe",
+          "description": "Absolute path to the pawncc.exe compiler."
+        },
+        "pawn.includePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "C:\\Program Files (x86)\\UMKa3XX\\pawn\\include\\"
+          ],
+          "description": "Include directories passed to the compiler via -i. The selected platform subdir (pawn.platformVersion) is added automatically."
+        },
+        "pawn.platformVersion": {
+          "type": "string",
+          "default": "304",
+          "enum": [
+            "",
+            "302",
+            "303",
+            "304",
+            "31X"
+          ],
+          "enumDescriptions": [
+            "Do not inject any platform subdir.",
+            "Use the 302 platform includes.",
+            "Use the 303 platform includes.",
+            "Use the 304 platform includes.",
+            "Use the 31X platform includes."
+          ],
+          "description": "Platform/version to compile against. Picks the matching subdir of pawn.platformIncludeBaseDir (e.g. ...\\include\\304\\)."
+        },
+        "pawn.platformIncludeBaseDir": {
+          "type": "string",
+          "default": "C:\\Program Files (x86)\\UMKa3XX\\pawn\\include\\",
+          "description": "Base include directory that holds platform subfolders (302, 303, 304, 31X)."
+        },
+        "pawn.addSourceDirToIncludes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically add the source file's directory as the first -i include path."
+        },
+        "pawn.extraArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-d1",
+            "-O3",
+            "-v",
+            "-V"
+          ],
+          "description": "Extra compiler flags (e.g. -d1 -O3 -v -V)."
+        },
+        "pawn.outputDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for the output .amx file. Leave empty to use the source file's directory."
+        },
+        "pawn.compileOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically recompile the file when it is saved."
+        },
+        "pawn.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a status bar item with the last compile result."
+        },
+        "pawn.clearBeforeCompile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Clear previous diagnostics before each compile."
+        },
+        "pawn.quotePaths": {
+          "type": "boolean",
+          "default": false,
+          "description": "Wrap paths in quotes when building the command line (useful when copying the command). Spawn always passes args safely regardless."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "build": "npm run compile && vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.4.0"
+  }
+}
