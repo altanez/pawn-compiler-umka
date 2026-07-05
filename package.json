@@ -2,7 +2,7 @@
   "name": "pawn-compiler-umka",
   "displayName": "Pawn Compiler (UMKa3XX)",
   "description": "Compile Pawn (.p) scripts with the UMKa3XX pawncc compiler directly in VS Code, with diagnostics in the Problems panel.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "hqh5",
   "license": "MIT",
   "engines": {

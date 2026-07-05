@@ -23,7 +23,8 @@ export class PawnTaskProvider implements vscode.TaskProvider {
     if (!file) {
       return [];
     }
-    return [this.makeTask(file, `Compile ${basename(file)}`)];
+    const task = this.makeTask(file, `Compile ${basename(file)}`);
+    return task ? [task] : [];
   }
 
   resolveTask(task: vscode.Task): vscode.Task | undefined {
@@ -34,8 +35,14 @@ export class PawnTaskProvider implements vscode.TaskProvider {
     return this.makeTask(def.file, task.name, task);
   }
 
-  private makeTask(file: string, name: string, existing?: vscode.Task): vscode.Task {
+  private makeTask(file: string, name: string, existing?: vscode.Task): vscode.Task | undefined {
     const config = getConfig();
+    // Guard against an empty compiler path — otherwise ShellExecution('') is
+    // built and `new Task(...)` throws "Illegal argument: command can't be
+    // undefined or null", breaking Ctrl+Shift+B / Run Task entirely.
+    if (!config.compilerPath || !config.compilerPath.trim()) {
+      return undefined;
+    }
     const args = buildArgs(file, config);
     const amxPath = getOutputAmxPath(file, config);
 

@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.1
+
+- **Fix**: build-task provider (`PawnTaskProvider.makeTask`) crashed with `Illegal argument: command can't be undefined or null` when `pawn.compilerPath` was empty/unset, which broke `Ctrl+Shift+B` (Run Build Task). Added a guard that returns `undefined` instead of building a `ShellExecution('')`, matching the existing check in `compileFile`.
+- Build-task list no longer contains a `null`/`undefined` entry when the compiler path is missing.
+
 ## 0.2.0
 
 - **Platform/version selection**: choose between `302`, `303`, `304`, `31X` (or none) via the new `Pawn: Select Platform / Version` command, the `pawn.platformVersion` setting, or by clicking the platform status bar item.
