@@ -2,3 +2,7 @@ node_modules/
 out/
 *.vsix
 .DS_Store
+
+# Keep built releases in the download/ folder tracked on GitHub
+!download/
+!download/**
